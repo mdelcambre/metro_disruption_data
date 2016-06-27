@@ -13,6 +13,8 @@ __email__ = "mark@delcambre.com"
 import requests
 from bs4 import BeautifulSoup
 
+from .parse import parse
+
 #Acrhive report report url
 
 
@@ -50,6 +52,9 @@ class ReportScraper:
         if not raw_disruptions:
             print("[ReportScraper] Report {} failed to parse".
                     format(id))
+        for disrup in raw_disruptions:
+            parse(disrup)
+
 
 
     def _get_report(self, id):
@@ -78,7 +83,7 @@ class ReportScraper:
 
 if __name__ == "__main__":
     scraper = ReportScraper()
-    scraper.scrape(3605)
+    scraper.scrape(3610)
 
 
 

@@ -1,4 +1,4 @@
-"Provides the class for parsing the metro"
+"Provides the functions for parsing the metro disruptions."
 
 __author__ = "Mark Delcambre"
 __copyright__ = "Copyright 2016, Mark Delcambre"
@@ -20,13 +20,20 @@ regex_group = Namespace(
     station     = re.compile(r'train at (.+?) (?:was|had|did)'),
     formats     = (
         re.compile(r'(?P<reason>did not operate), resulting in a (?P<delay>\d+?)-minute'),
-        re.compile(r'(?P<reason>was expressed for .+)'),
+        re.compile(r'was (?P<reason>expressed for .+)'),
         re.compile(r'as delayed (?P<delay>\d+?) minutes? due to (?P<reason>.+)'),
-        re.compile(r'was offloaded due to (?P<reason>[^.]+)\. Passengers experienced a (?P<delay>\d+?)-minute')
+        re.compile(r'due to (?P<reason>[^.]+)\.[^.]*?\.?\s+Passengers experienced an? (?P<delay>\d+?)-minute'),
+        re.compile(r' for (?P<reason>schedule adherence/improved train spacing)\.[^.]*?\.?\s+Passengers experienced an? (?P<delay>\d+?)-minute')
     )
 )
 
 def parse(disruption):
+    """Function to parse the disruption strings into a tuple of data.
+    Args:
+        disruption (string)
+    Returns:
+        tuple of time, direction, color, station, reason, delay
+    """
     group = regex_group.time.search(disruption)
     time = group.group(1)
     group = regex_group.direction.search(disruption)
@@ -35,6 +42,7 @@ def parse(disruption):
     color = group.group(1)
     group = regex_group.station.search(disruption)
     station = group.group(1)
+    reason = False
     for regex in regex_group.formats:
         group = regex.search(disruption)
         if group:
@@ -44,15 +52,8 @@ def parse(disruption):
             except IndexError:
                 delay = None
             break
-    print(time, direction, color, station, reason, delay)
-
-
-
-if __name__ == "__main__":
-    parse("6:40 a.m. A Greenbelt-bound Yellow Line train at Archives was offloaded due to a brake problem. Passengers experienced a 6-minute delay.")
-    parse("9:11 a.m. A Mt. Vernon Square-bound Yellow Line train at Huntington did not operate, resulting in a 6-minute gap in service.")
-    parse("12:18 p.m. A Greenbelt-bound Green Line train at Congress Heights was delayed 4 minutes due to a door problem.")
-    parse("3:22 p.m. A Glenmont-bound Red Line train at Takoma was expressed for schedule adherence/improved train spacing.")
-
-
+    if not reason:
+        print(disruption)
+    else:
+        print((time, direction, color, station, reason, delay))
 
