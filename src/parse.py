@@ -23,7 +23,7 @@ regex_group = Namespace(
         re.compile(r'was (?P<reason>expressed for .+)'),
         re.compile(r'as delayed (?P<delay>\d+?) minutes? due to (?P<reason>.+)'),
         re.compile(r'due to (?P<reason>[^.]+)\.[^.]*?\.?\s+Passengers experienced an? (?P<delay>\d+?)-minute'),
-        re.compile(r' for (?P<reason>schedule adherence/improved train spacing)\.[^.]*?\.?\s+Passengers experienced an? (?P<delay>\d+?)-minute')
+        re.compile(r' for (?P<reason>schedule adherence/improved train spacing)\..*?\.?\s+(?:Passengers|Customers) experienced an? (?P<delay>\d+?)-minute')
     )
 )
 
@@ -34,26 +34,28 @@ def parse(disruption):
     Returns:
         tuple of time, direction, color, station, reason, delay
     """
-    group = regex_group.time.search(disruption)
-    time = group.group(1)
-    group = regex_group.direction.search(disruption)
-    direction = group.group(1)
-    group = regex_group.color.search(disruption)
-    color = group.group(1)
-    group = regex_group.station.search(disruption)
-    station = group.group(1)
-    reason = False
-    for regex in regex_group.formats:
-        group = regex.search(disruption)
-        if group:
-            reason = group.group('reason')
-            try:
-                delay = group.group('delay')
-            except IndexError:
-                delay = None
-            break
-    if not reason:
-        print(disruption)
-    else:
-        print((time, direction, color, station, reason, delay))
-
+    try:
+        group = regex_group.time.search(disruption)
+        time = group.group(1)
+        group = regex_group.direction.search(disruption)
+        direction = group.group(1)
+        group = regex_group.color.search(disruption)
+        color = group.group(1)
+        group = regex_group.station.search(disruption)
+        station = group.group(1)
+        reason = False
+        for regex in regex_group.formats:
+            group = regex.search(disruption)
+            if group:
+                reason = group.group('reason')
+                try:
+                    delay = group.group('delay')
+                except IndexError:
+                    delay = None
+                break
+        if not reason:
+            print(disruption)
+#        else:
+#            print((time, direction, color, station, reason, delay))
+    except:
+        print("Unable to process: {}".format(disruption))
