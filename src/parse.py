@@ -17,13 +17,14 @@ regex_group = Namespace(
     time        = re.compile(r'^(\d{1,2}:\d\d (?:a\.m\.|p\.m\.))'),
     direction   = re.compile(r'A (.+?)-bound'),
     color       = re.compile(r'bound (\w+?) Line train'),
-    station     = re.compile(r'train at (.+?) (?:was|had|did)'),
+    station     = re.compile(r'train (?:at|outside) (.+?) (?:was|had|did)'),
     formats     = (
-        re.compile(r'(?P<reason>did not operate), resulting in a (?P<delay>\d+?)-minute'),
-        re.compile(r'was (?P<reason>expressed for .+)'),
+        re.compile(r'(?P<reason>did not operate), resulting in an? (?P<delay>\d+?)-minute'),
         re.compile(r'as delayed (?P<delay>\d+?) minutes? due to (?P<reason>.+)'),
-        re.compile(r'due to (?P<reason>[^.]+)\.[^.]*?\.?\s+Passengers experienced an? (?P<delay>\d+?)-minute'),
-        re.compile(r' for (?P<reason>schedule adherence/improved train spacing)\..*?\.?\s+(?:Passengers|Customers) experienced an? (?P<delay>\d+?)-minute')
+        re.compile(r'due to (?P<reason>[^.]+)\..*?\.?\s+(?:Passengers|Customers) experienced an? (?P<delay>\d+?)-minute'),
+        re.compile(r' for (?P<reason>schedule adherence/improved train spacing)\..*?\.?\s+(?:Passengers|Customers) experienced an? (?P<delay>\d+?)-minute'),
+        re.compile(r'was (?P<reason>expressed for .+)'),
+        re.compile(r'was (?P<reason>offloaded .+)'),
     )
 )
 
@@ -54,8 +55,9 @@ def parse(disruption):
                     delay = None
                 break
         if not reason:
-            print(disruption)
-#        else:
-#            print((time, direction, color, station, reason, delay))
-    except:
-        print("Unable to process: {}".format(disruption))
+            print("no reason: {}".format(disruption))
+        else:
+            return (time, direction, color, station, reason, delay)
+    except Exception as err:
+        print("Unable to process: {}".format(disruption.encode('utf-8')))
+

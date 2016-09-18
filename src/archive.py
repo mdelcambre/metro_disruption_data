@@ -9,8 +9,10 @@ __version__ = "0.1"
 __maintainer__ = "Mark Delcambre"
 __email__ = "mark@delcambre.com"
 
-# 3rd Party Requested
+# built-in
+import csv
 import re
+# 3rd Party Requested
 import requests
 from bs4 import BeautifulSoup
 # custom library
@@ -48,8 +50,21 @@ class ArchiveScraper:
         reports = self._parse_archive(archive)
         if not reports:
             return False
-        for report in reports:
-            self.report.scrape(report[0])
+        with open('disruptions.csv', 'w') as csv_file:
+            csv_writer = csv.writer(csv_file)
+            csv_writer.writerow(
+                    ['time',
+                    'direction',
+                    'color',
+                    'location',
+                    'problem',
+                    'delay (min)'])
+            for report in reports:
+                for row in self.report.scrape(report[0], report[1]):
+                    try:
+                        csv_writer.writerow(row)
+                    except:
+                        pass
 
     def _get_archive(self):
         try:

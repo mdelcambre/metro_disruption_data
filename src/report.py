@@ -32,7 +32,7 @@ class ReportScraper:
         None
     """
 
-    def scrape(self, id):
+    def scrape(self, id, date):
         """Public function to start the scraping process for each report.
 
         Args:
@@ -52,9 +52,14 @@ class ReportScraper:
         if not raw_disruptions:
             print("[ReportScraper] Report {} failed to parse".
                     format(id))
+        disruptions = []
         for disrup in raw_disruptions:
-            parse(disrup)
-
+            disruption = parse(disrup)
+            if disruption:
+                disruptions.append(
+                        ("{} {}".format(date, disruption[0]),) + \
+                                disruption[1:])
+        return disruptions
 
 
     def _get_report(self, id):
