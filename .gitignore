@@ -78,7 +78,9 @@ celerybeat-schedule
 # dotenv
 .env
 
+
 # virtualenv
+env/
 venv/
 ENV/
 
@@ -87,3 +89,7 @@ ENV/
 
 # Rope project settings
 .ropeproject
+
+
+#secrets file
+src/client_secrets.py
