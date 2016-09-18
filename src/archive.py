@@ -34,11 +34,11 @@ class ArchiveScraper:
     """
     report = ReportScraper()
 
-    def scrape(self):
+    def scrape(self, csv_file):
         """Public function to start the scraping process the master archive.
 
         Args:
-            None
+            csv_file: file path to save the output
 
         Returns:
             bool, True on success and False on failure
@@ -50,7 +50,7 @@ class ArchiveScraper:
         reports = self._parse_archive(archive)
         if not reports:
             return False
-        with open('disruptions.csv', 'w') as csv_file:
+        with open(csv_file, 'w') as csv_file:
             csv_writer = csv.writer(csv_file)
             csv_writer.writerow(
                     ['time',
@@ -90,7 +90,8 @@ class ArchiveScraper:
 
 if __name__ == "__main__":
     scraper = ArchiveScraper()
-    scraper.scrape()
+    scraper.scrape('test.csv')
+
 
 
 
