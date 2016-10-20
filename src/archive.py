@@ -58,7 +58,8 @@ class ArchiveScraper:
                     'color',
                     'location',
                     'problem',
-                    'delay (min)'])
+                    'delay (min)',
+                    'full text'])
             for report in reports:
                 for row in self.report.scrape(report[0], report[1]):
                     try:
