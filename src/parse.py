@@ -55,9 +55,16 @@ def parse(disruption):
                     delay = None
                 break
         if not reason:
+            return (time, '', '', '', '', '', disruption)
             print("no reason: {}".format(disruption))
         else:
-            return (time, direction, color, station, reason, delay)
+            return (time, direction, color, station, reason, delay, disruption)
     except Exception as err:
         print("Unable to process: {}".format(disruption.encode('utf-8')))
+        try:
+            if time:
+                return (time, '', '', '', '', '', disruption)
+            return False
+        except UnboundLocalError:
+            return False
 
