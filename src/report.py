@@ -19,8 +19,7 @@ from .parse import parse
 
 
 # The base url for the individual reports
-REPORT_URL = 'http://www.wmata.com/rail/service_reports/viewPage_update.cfm?ReportID='
-
+REPORT_URL = 'https://www.wmata.com/service/daily-report/daily-service-report.cfm?id='
 
 class ReportScraper:
     """Class for scraping individual reports by id to insert into the sqlitedb.
@@ -77,18 +76,18 @@ class ReportScraper:
 
     def _parse_html(self, raw_report):
         soup = BeautifulSoup(raw_report, "html.parser")
-        raw = soup.select("div.internal-box2-inner > p")
+        raw = soup.select("#cs_control_2897")
         raw_lines = []
-        for text in raw[0].text.split('\n'):
+        for text in raw[0].prettify().split('\n'):
             clean = text.strip()
-            if not clean == '' and not clean == 'Report Archives':
+            if not clean == '' and not clean[0] == '<' and not clean[0:5] == 'Daily':
                 raw_lines.append(clean)
         return raw_lines
 
 
 if __name__ == "__main__":
     scraper = ReportScraper()
-    scraper.scrape(3610)
+    print(scraper.scrape(20170710100901, 'July 09, 2017'))
 
 
 
